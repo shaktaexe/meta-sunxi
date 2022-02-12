@@ -18,6 +18,8 @@ SRC_URI += " \
 # fix booting issue on orange pi zero
 SRC_URI_append_orange-pi-zero = " file://0002-Revert-sunxi-psci-avoid-error-address-of-packed-memb.patch"
 
+SRC_URI_append_nanopi-neo = " file://0002-Revert-sunxi-psci-avoid-error-address-of-packed-memb.patch"
+
 UBOOT_ENV_SUFFIX = "scr"
 UBOOT_ENV = "boot"
 
