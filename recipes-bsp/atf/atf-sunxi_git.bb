@@ -1,16 +1,26 @@
-DESCRIPTION = "ARM Trusted Firmware Allwinner"
-LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://license.md;md5=829bdeb34c1d9044f393d5a16c068371"
+inherit deploy
 
-SRC_URI = "git://github.com/apritzel/arm-trusted-firmware;nobranch=1"
-SRCREV = "aa75c8da415158a94b82a430b2b40000778e851f"
+DESCRIPTION = "ARM Trusted Firmware"
+LICENSE = "BSD"
+LIC_FILES_CHKSUM = "file://license.rst;md5=1dd070c98a281d18d9eefd938729b031"
+
+FILESEXTRAPATHS_append := "${THISDIR}/${PN}:"
+
+SRC_URI = " \
+        git://github.com/ARM-software/arm-trusted-firmware.git;nobranch=1 \
+        "
+SRCREV_sun50iw2 = "c390ecd6db5fadb054466a8d4168d9bbbff2fa95"
+SRCREV_sun50iw6 = "c390ecd6db5fadb054466a8d4168d9bbbff2fa95"
+SRCREV_sun50i = "c390ecd6db5fadb054466a8d4168d9bbbff2fa95"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
-COMPATIBLE_MACHINE = "(sun50i)"
+COMPATIBLE_MACHINE = "(sun50iw2|sun50iw6|sun50i)"
 
-PLATFORM_sun50i = "sun50iw1p1"
+PLATFORM_sun50iw2 = "sun50i_a64"
+PLATFORM_sun50i = "sun50i_a64"
+PLATFORM_sun50iw6 = "sun50i_h6"
 
 LDFLAGS[unexport] = "1"
 
@@ -22,6 +32,8 @@ do_compile() {
       all
 }
 
-do_install() {
-    install -D -p -m 0644 ${B}/${PLATFORM}/release/bl31.bin ${DEPLOY_DIR_IMAGE}/bl31.bin
+do_deploy() {
+    install -D -p -m 0644 ${B}/${PLATFORM}/release/bl31.bin ${DEPLOYDIR}/bl31.bin
 }
+
+addtask deploy after do_compile
