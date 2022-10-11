@@ -22,11 +22,13 @@ S = "${WORKDIR}/linux-${PV}"
 
 SRC_URI = "https://www.kernel.org/pub/linux/kernel/v5.x/linux-${PV}.tar.xz \
 	file://0001-dts-orange-pi-zero-Add-wifi-support.patch \
+	file://0002-dts-nanopi-neo-air-add-camera.patch \
 	file://defconfig \
 "
 
 SRC_URI:append:use-mailine-graphics = " file://drm.cfg"
 SRC_URI:append:bananapi = " file://axp20x.cfg"
 SRC_URI:append:cubietruck = " file://axp20x.cfg"
+SRC_URI:append:nanopi-neo-air = " file://cam500b.cfg"
 
 FILES_${KERNEL_PACKAGE_NAME}-base:append = " ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin.modinfo"
