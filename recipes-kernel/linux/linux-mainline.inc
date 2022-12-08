@@ -28,6 +28,7 @@ SRC_URI = "https://www.kernel.org/pub/linux/kernel/v5.x/linux-${PV}.tar.xz \
 
 SRC_URI:append:use-mailine-graphics = " file://drm.cfg"
 SRC_URI:append:bananapi = " file://axp20x.cfg"
+SRC_URI:append:bananapi-m2-zero = " file://axp20x.cfg"
 SRC_URI:append:cubietruck = " file://axp20x.cfg"
 SRC_URI:append:nanopi-neo-air = " file://cam500b.cfg"
 
