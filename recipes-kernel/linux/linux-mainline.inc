@@ -23,6 +23,7 @@ S = "${WORKDIR}/linux-${PV}"
 SRC_URI = "https://www.kernel.org/pub/linux/kernel/v5.x/linux-${PV}.tar.xz \
 	file://0001-dts-orange-pi-zero-Add-wifi-support.patch \
 	file://0002-dts-nanopi-neo-air-add-camera.patch \
+	file://0003-dts-allwinner-bananapi-m2-zreo-Enforce-consistent-MM.patch \
 	file://defconfig \
 "
 
