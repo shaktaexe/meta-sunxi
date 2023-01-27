@@ -12,3 +12,9 @@ SRC_URI:append:orange-pi-zero2sun50i = " file://0002-drv-add-dump_reg-and-sunxi-
 SRC_URI:append:orange-pi-zero2sun50i = " file://0003-drv-add-sunxi_get_soc_chipid-and-sunxi_get_serial.patch"
 SRC_URI:append:orange-pi-zero2sun50i = " file://0004-dts-add-sunxi-info-device-tree-node.patch"
 SRC_URI:append:orange-pi-zero2sun50i = " file://0005-dts-add-addr_mgt-device-tree-node.patch"
+
+SRC_URI:append:orange-pi-zero2sun50i = " file://0006-drv-modem-power-Power-manager-for-modems.patch"
+SRC_URI:append:orange-pi-zero2sun50i = " file://0007-drv-add-sunxi-addr-driver-used-to-fix-uwe5622-bluetooth-.patch"
+SRC_URI:append:orange-pi-zero2sun50i = " file://0008-drv-wireless-add-uwe5622-driver.patch"
+SRC_URI:append:orange-pi-zero2sun50i = " file://0009-drv-uwe5622-bluetooth-fix-firmware-init-fail.patch"
+SRC_URI:append:orange-pi-zero2sun50i = " file://0010-drv-fix-incldue-path-for-unisocwcn.patch"
