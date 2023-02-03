@@ -9,6 +9,8 @@ PV = "3.4.104"
 PR = "r1"
 SRCREV = "d47d367036be38c5180632ec8a3ad169a4593a88"
 
+LINUX_VERSION ?= "${PV}"
+
 MACHINE_KERNEL_PR:append = "a"
 
 SRC_URI += "git://github.com/linux-sunxi/linux-sunxi.git;branch=sunxi-3.4;protocol=https \
