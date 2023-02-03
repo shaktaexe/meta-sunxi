@@ -4,5 +4,4 @@ DESCRIPTION = "Mainline Longterm Linux kernel"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRC_URI[md5sum] = "0751179f60de73eb2cd93f161fa52fcf"
-SRC_URI[sha256sum] = "3b84e13abae26af17ebccc4d7212f5843a991127a73a320848d5c6942ef781a2"
+SRC_URI[sha256sum] = "a63c2bb1beb15f1aea9c63cf80559f5b7ab58afd2da2fa5e7670c515ebe1fe80"
