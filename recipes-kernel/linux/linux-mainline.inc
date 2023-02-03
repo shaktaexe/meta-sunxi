@@ -20,7 +20,10 @@ KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
 
 S = "${WORKDIR}/linux-${PV}"
 
-SRC_URI = "https://www.kernel.org/pub/linux/kernel/v5.x/linux-${PV}.tar.xz \
+# get release version 5.x or 6.x based on version
+KRELEASE = "${@d.getVar('PV', True).split('.')[0]}"
+
+SRC_URI = "https://www.kernel.org/pub/linux/kernel/v${KRELEASE}.x/linux-${PV}.tar.xz \
 	file://0001-dts-orange-pi-zero-Add-wifi-support.patch \
 	file://0002-dts-nanopi-neo-air-add-camera.patch \
 	file://0003-dts-allwinner-bananapi-m2-zreo-Enforce-consistent-MM.patch \
