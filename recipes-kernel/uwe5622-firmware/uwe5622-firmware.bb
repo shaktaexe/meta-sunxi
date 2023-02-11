@@ -6,8 +6,10 @@ S = "${WORKDIR}"
 
 COMPATIBLE_MACHINE = "orange-pi-zero2"
 
-SRC_URI += "file://wcnmodem.bin"
-SRC_URI += "file://wifi_2355b001_1ant.ini"
+SRC_URI:append = " \
+        file://wcnmodem.bin \
+        file://wifi_2355b001_1ant.ini \
+"
 
 do_install() {
     install -d ${D}${base_libdir}/firmware
