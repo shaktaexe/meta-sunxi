@@ -1,6 +1,6 @@
-From bb564341bb6c64003abbf24fd5d5ef254060b040 Mon Sep 17 00:00:00 2001
+From 5138d597275fd503573fac84018186bd18740644 Mon Sep 17 00:00:00 2001
 From: pbiel <pbiel7@gmail.com>
-Date: Thu, 19 Jan 2023 10:46:28 +0100
+Date: Thu, 30 Mar 2023 22:45:33 +0200
 Subject: [PATCH] Fix incldue path for unisocwcn
 
 ---
@@ -24,13 +24,13 @@ index 313ea5123..e9a398584 100644
  export UNISOC_BSP_INCLUDE
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/Makefile b/drivers/net/wireless/uwe5622/unisocwcn/Makefile
-index b62652f63..ae6e1e25a 100644
+index f9c595747..1ad490594 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/Makefile
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/Makefile
-@@ -119,9 +119,9 @@ ccflags-y += -DCONFIG_WCN_UTILS
+@@ -129,9 +129,9 @@ ccflags-y += -DCONFIG_WCN_BOOT
+ ccflags-y += -DCONFIG_WCN_UTILS
  
  #### include path ######
- ccflags-y += -I$(src)/../tty-sdio
 -ccflags-y += -I$(src)/include/
 -ccflags-y += -I$(src)/platform/
 -ccflags-y += -I$(src)/platform/rf/
