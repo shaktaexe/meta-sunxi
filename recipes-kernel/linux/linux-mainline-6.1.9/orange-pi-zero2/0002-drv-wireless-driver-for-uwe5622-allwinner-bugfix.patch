@@ -1,7 +1,7 @@
-From b8d7374fd401d0d0de9647922f5288fdc99103b3 Mon Sep 17 00:00:00 2001
-From: orangepi-xunlong <258384131@qq.com>
-Date: Wed, 18 May 2022 09:38:39 +0800
-Subject: [PATCH] wireless: update uwe5622
+From d58b45ae101e1f97f7291017a174d875e5d975d6 Mon Sep 17 00:00:00 2001
+From: pbiel <pbiel7@gmail.com>
+Date: Thu, 30 Mar 2023 22:34:50 +0200
+Subject: [PATCH] [PATCH] wireless: update uwe5622
 
 ---
  drivers/net/wireless/uwe5622/tty-sdio/tty.c   |  72 +--
@@ -27,8 +27,8 @@ Subject: [PATCH] wireless: update uwe5622
  .../uwe5622/unisocwcn/sdio/sdiohal_common.c   | 201 ++++---
  .../uwe5622/unisocwcn/sdio/sdiohal_ctl.c      |   9 +-
  .../uwe5622/unisocwcn/sdio/sdiohal_main.c     |   1 -
- .../uwe5622/unisocwcn/sdio/sdiohal_rx.c       |  54 +-
- .../uwe5622/unisocwcn/sdio/sdiohal_tx.c       |  10 +-
+ .../uwe5622/unisocwcn/sdio/sdiohal_rx.c       |  52 +-
+ .../uwe5622/unisocwcn/sdio/sdiohal_tx.c       |   8 +-
  .../uwe5622/unisocwcn/sleep/sdio_int.c        |  11 +-
  .../uwe5622/unisocwcn/sleep/sdio_int.h        |   4 +-
  .../uwe5622/unisocwcn/sleep/slp_mgr.c         |  10 +-
@@ -72,11 +72,11 @@ Subject: [PATCH] wireless: update uwe5622
  .../net/wireless/uwe5622/unisocwifi/wl_intf.c | 234 ++++----
  .../net/wireless/uwe5622/unisocwifi/wl_intf.h |   1 +
  .../net/wireless/uwe5622/unisocwifi/work.c    |  28 +-
- 68 files changed, 2158 insertions(+), 1587 deletions(-)
- create mode 100755 drivers/net/wireless/uwe5622/unisocwifi/wcn_wrapper.h
+ 68 files changed, 2156 insertions(+), 1585 deletions(-)
+ create mode 100644 drivers/net/wireless/uwe5622/unisocwifi/wcn_wrapper.h
 
 diff --git a/drivers/net/wireless/uwe5622/tty-sdio/tty.c b/drivers/net/wireless/uwe5622/tty-sdio/tty.c
-index 0f90a758b7..6498272fc1 100755
+index 0f90a758b..6498272fc 100644
 --- a/drivers/net/wireless/uwe5622/tty-sdio/tty.c
 +++ b/drivers/net/wireless/uwe5622/tty-sdio/tty.c
 @@ -113,17 +113,6 @@ static ssize_t dumpmem_store(struct device *dev,
@@ -208,7 +208,7 @@ index 0f90a758b7..6498272fc1 100755
  	sprdwcn_bus_chn_init(&bt_tx_ops);
  	sema_init(&sem_id, BT_TX_POOL_SIZE - 1);
 diff --git a/drivers/net/wireless/uwe5622/tty-sdio/woble.c b/drivers/net/wireless/uwe5622/tty-sdio/woble.c
-index 1df3f37fd6..578108e7a7 100755
+index 1df3f37fd..578108e7a 100644
 --- a/drivers/net/wireless/uwe5622/tty-sdio/woble.c
 +++ b/drivers/net/wireless/uwe5622/tty-sdio/woble.c
 @@ -22,13 +22,13 @@
@@ -254,7 +254,7 @@ index 1df3f37fd6..578108e7a7 100755
  	hci_cmd.opcode = 0;
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/Makefile b/drivers/net/wireless/uwe5622/unisocwcn/Makefile
-index b62652f63a..f9c5957475 100755
+index b62652f63..f9c595747 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/Makefile
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/Makefile
 @@ -50,6 +50,7 @@ endif
@@ -454,7 +454,7 @@ index b62652f63a..f9c5957475 100755
  KDIR ?= $(ANDROID_PRODUCT_OUT)/obj/KERNEL_OBJ
  ARCH ?= arm
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/boot/wcn_integrate_boot.c b/drivers/net/wireless/uwe5622/unisocwcn/boot/wcn_integrate_boot.c
-index c544d63cfa..9f713386ca 100755
+index 48b69ccaa..ebccdb22f 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/boot/wcn_integrate_boot.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/boot/wcn_integrate_boot.c
 @@ -19,7 +19,6 @@
@@ -466,7 +466,7 @@ index c544d63cfa..9f713386ca 100755
  static struct mutex marlin_lock;
  static struct wifi_calibration wifi_data;
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/include/marlin_platform.h b/drivers/net/wireless/uwe5622/unisocwcn/include/marlin_platform.h
-index ae8daac466..7a78181a45 100755
+index ae8daac46..7a78181a4 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/include/marlin_platform.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/include/marlin_platform.h
 @@ -83,7 +83,8 @@ enum marlin_wake_host_en {
@@ -480,7 +480,7 @@ index ae8daac466..7a78181a45 100755
  
  enum wcn_hw_type wcn_get_hw_if_type(void);
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/include/uwe562x_glb.h b/drivers/net/wireless/uwe5622/unisocwcn/include/uwe562x_glb.h
-index ca7feadb54..275a464eb0 100755
+index ca7feadb5..275a464eb 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/include/uwe562x_glb.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/include/uwe562x_glb.h
 @@ -245,16 +245,15 @@ static inline unsigned int reg_value(unsigned int marlin3reg,
@@ -506,7 +506,7 @@ index ca7feadb54..275a464eb0 100755
  #define GNSS_CHIPID_REG 0x603003fc
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/bufring.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/bufring.c
-index b8459b914c..7cb79f2f2d 100755
+index b8459b914..7cb79f2f2 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/bufring.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/bufring.c
 @@ -117,7 +117,6 @@ void mdbg_ring_destroy(struct mdbg_ring_t *ring)
@@ -518,7 +518,7 @@ index b8459b914c..7cb79f2f2d 100755
  }
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common.h b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common.h
-index 5999726f54..34de085bb0 100755
+index 5999726f5..34de085bb 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common.h
 @@ -20,44 +20,76 @@
@@ -624,7 +624,7 @@ index 5999726f54..34de085bb0 100755
  
  #endif
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common_ctl.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common_ctl.c
-index c9831c1d38..0fe9e1aded 100755
+index c9831c1d3..0fe9e1ade 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common_ctl.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_common_ctl.c
 @@ -76,18 +76,21 @@ enum gnss_cp_status_subtype {
@@ -823,7 +823,7 @@ index c9831c1d38..0fe9e1aded 100755
  MODULE_AUTHOR("Jun.an<jun.an@spreadtrum.com>");
 +#endif
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dbg.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dbg.c
-index 5d21799337..b1c2b9408c 100755
+index 5d2179933..b1c2b9408 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dbg.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dbg.c
 @@ -109,7 +109,6 @@ static void gnss_ring_destroy(struct gnss_ring_t *pring)
@@ -917,7 +917,7 @@ index 5d21799337..b1c2b9408c 100755
  MODULE_LICENSE("GPL");
 +#endif
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dump.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dump.c
-index 44afbf6ec7..48da71449d 100755
+index 44afbf6ec..48da71449 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dump.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_dump.c
 @@ -18,7 +18,9 @@
@@ -996,7 +996,7 @@ index 44afbf6ec7..48da71449d 100755
  	ret = gnss_creat_gnss_dump_file();
  	if (ret == -1) {
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_pmnotify_ctl.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_pmnotify_ctl.c
-index 84412f9160..6bf78a2bd9 100755
+index 84412f916..6bf78a2bd 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_pmnotify_ctl.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/gnss/gnss_pmnotify_ctl.c
 @@ -32,6 +32,7 @@
@@ -1043,7 +1043,7 @@ index 84412f9160..6bf78a2bd9 100755
 +#endif
 \ No newline at end of file
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c
-index 015c9020e9..86fa3b103a 100755
+index 015c9020e..86fa3b103 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/rdc_debug.c
 @@ -31,8 +31,6 @@
@@ -1075,7 +1075,7 @@ index 015c9020e9..86fa3b103a 100755
  	"/data",		/* amlogic s905w... */
  	"/mnt/UDISK"		/* allwinner r328... */
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_boot.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_boot.c
-index 57cf1a898f..fca777c802 100755
+index 57cf1a898..fca777c80 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_boot.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_boot.c
 @@ -10,7 +10,7 @@
@@ -1527,7 +1527,7 @@ index 57cf1a898f..fca777c802 100755
  	platform_driver_unregister(&marlin_driver);
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_op.h b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_op.h
-index 391280910f..7121823e7a 100755
+index 391280910..7121823e7 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_op.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_op.h
 @@ -1,12 +1,6 @@
@@ -1544,7 +1544,7 @@ index 391280910f..7121823e7a 100755
  void wcn_op_exit(void);
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_parn_parser.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_parn_parser.c
-index fe6cd44fb1..0a61282f4c 100755
+index aea7d6d0f..e3eeab46d 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_parn_parser.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_parn_parser.c
 @@ -48,9 +48,6 @@
@@ -1558,7 +1558,7 @@ index fe6cd44fb1..0a61282f4c 100755
  static char fstab_name[128];
  static char fstab_dir[FSTAB_PATH_NUM][32] = {
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_procfs.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_procfs.c
-index 2edb7903d8..8be7131e1a 100755
+index 2edb7903d..8be7131e1 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_procfs.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_procfs.c
 @@ -23,7 +23,7 @@
@@ -1726,7 +1726,7 @@ index 2edb7903d8..8be7131e1a 100755
  int mdbg_memory_alloc(void)
  {
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.c b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.c
-index 8b19305ca1..2fd7f39888 100755
+index 8b19305ca..2fd7f3988 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.c
 @@ -114,7 +114,7 @@ static long int mdbg_comm_write(char *buf,
@@ -1806,7 +1806,7 @@ index 8b19305ca1..2fd7f39888 100755
  	mdbg_dev->ring_dev = NULL;
  	kfree(ring_dev);
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.h b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.h
-index 9e74b7176a..3e1dc9f422 100755
+index 9e74b7176..3e1dc9f42 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_txrx.h
 @@ -18,8 +18,6 @@
@@ -1830,7 +1830,7 @@ index 9e74b7176a..3e1dc9f422 100755
  	struct mutex mdbg_read_mutex;
  	struct list_head	rx_head;
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-index 55eda73261..c26bfb3251 100755
+index 55eda7326..c26bfb325 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
 @@ -15,7 +15,7 @@
@@ -1882,7 +1882,7 @@ index 55eda73261..c26bfb3251 100755
  int sdiohal_misc_init(void);
  void sdiohal_misc_deinit(void);
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_common.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_common.c
-index 8896272a95..8dbf21437b 100755
+index 8896272a9..8dbf21437 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_common.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_common.c
 @@ -3,7 +3,7 @@
@@ -2398,7 +2398,7 @@ index 8896272a95..8dbf21437b 100755
  
  	return 0;
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c
-index ceb34a487e..b426bf89cd 100755
+index 5a5cd9bb3..5f5905aac 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c
 @@ -55,9 +55,6 @@
@@ -2439,7 +2439,7 @@ index ceb34a487e..b426bf89cd 100755
  	if (count > SDIOHAL_WRITE_SIZE) {
  		sdiohal_err("%s write size > %d\n",
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c
-index 920645b2b6..2f093e403d 100755
+index 31c2639e4..2008e14a5 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c
 @@ -1971,7 +1971,6 @@ static int sdiohal_probe(struct sdio_func *func,
@@ -2451,7 +2451,7 @@ index 920645b2b6..2f093e403d 100755
  	sdiohal_info("probe ok\n");
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_rx.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_rx.c
-index 287d17c959..e968c09b23 100755
+index 287d17c95..2a64dac7a 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_rx.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_rx.c
 @@ -99,8 +99,8 @@ static int sdiohal_rx_list_parser(struct sdiohal_list_t *data_list,
@@ -2590,7 +2590,7 @@ index 287d17c959..e968c09b23 100755
  		}
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_tx.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_tx.c
-index 540a589770..b3b000e951 100755
+index ce0a9a639..9308abae2 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_tx.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_tx.c
 @@ -33,8 +33,8 @@ static void sdiohal_tx_retrybuf_left(unsigned int suc_pac_cnt)
@@ -2623,7 +2623,7 @@ index 540a589770..b3b000e951 100755
  		}
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.c b/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.c
-index 6a14855a91..f3dec551e9 100755
+index 2f76fee2b..3bd84deba 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.c
 @@ -58,7 +58,7 @@ void sdio_wait_pub_int_done(void)
@@ -2675,7 +2675,7 @@ index 6a14855a91..f3dec551e9 100755
  	wakeup_source_destroy(sdio_int.pub_int_ws);
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.h b/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.h
-index b4ed05fd5e..2a1bbf2486 100755
+index b4ed05fd5..2a1bbf248 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.h
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sleep/sdio_int.h
 @@ -2,8 +2,6 @@
@@ -2698,7 +2698,7 @@ index b4ed05fd5e..2a1bbf2486 100755
  	unsigned int pub_int_num;
  	/* 1: power on, 0: power off */
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sleep/slp_mgr.c b/drivers/net/wireless/uwe5622/unisocwcn/sleep/slp_mgr.c
-index 3c173c2604..65f37abc43 100755
+index 3c173c260..65f37abc4 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sleep/slp_mgr.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/sleep/slp_mgr.c
 @@ -29,6 +29,7 @@
@@ -2750,7 +2750,7 @@ index 3c173c2604..65f37abc43 100755
  				mutex_unlock(&(slp_mgr.wakeup_lock));
  				return -1;
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/wcn_bus.c b/drivers/net/wireless/uwe5622/unisocwcn/wcn_bus.c
-index 0277de6665..231718d773 100755
+index b6b54733f..2926b7f58 100644
 --- a/drivers/net/wireless/uwe5622/unisocwcn/wcn_bus.c
 +++ b/drivers/net/wireless/uwe5622/unisocwcn/wcn_bus.c
 @@ -17,8 +17,6 @@
@@ -2806,7 +2806,7 @@ index 0277de6665..231718d773 100755
  
  	/* pr_info("[-]%s(%d)\n", __func__, ops->channel); */
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/Kconfig b/drivers/net/wireless/uwe5622/unisocwifi/Kconfig
-index 060c584f5d..fce21d35d0 100755
+index bcfd8bfb7..952c263f3 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/Kconfig
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/Kconfig
 @@ -1,3 +1,8 @@
@@ -2818,15 +2818,14 @@ index 060c584f5d..fce21d35d0 100755
  config WLAN_UWE5622
  	tristate "UWE5622 Wi-Fi Driver"
  	help
-@@ -15,5 +20,5 @@ config UNISOC_WIFI_PS
+@@ -15,4 +20,4 @@ config UNISOC_WIFI_PS
  	bool "Unisoc Wi-Fi Power Save Support"
  	depends on WLAN_UWE5622
          help
 -          Spard UWE5622 Wi-Fi Driver Power Save.
 +          Sprd UWE5622 Wi-Fi Driver Power Save.
- 
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/Makefile b/drivers/net/wireless/uwe5622/unisocwifi/Makefile
-index 966e74eeeb..f9047ecd5a 100755
+index 966e74eee..f9047ecd5 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/Makefile
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/Makefile
 @@ -1,8 +1,6 @@
@@ -2915,7 +2914,7 @@ index 966e74eeeb..f9047ecd5a 100755
  all: $(all_dependencies)
  driver: $(driver_dependencies)
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/api_version.c b/drivers/net/wireless/uwe5622/unisocwifi/api_version.c
-index 79f0b5706d..91bcfee46f 100755
+index 79f0b5706..91bcfee46 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/api_version.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/api_version.c
 @@ -407,7 +407,7 @@ void sprdwl_fill_drv_api_version(struct sprdwl_priv *priv,
@@ -2970,7 +2969,7 @@ index 79f0b5706d..91bcfee46f 100755
  	}
  }
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.c b/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.c
-index daef880ae3..3d0f12ce37 100755
+index daef880ae..3d0f12ce3 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.c
 @@ -238,38 +238,38 @@ sprdwl_mgmt_stypes[NUM_NL80211_IFTYPES] = {
@@ -4470,7 +4469,7 @@ index daef880ae3..3d0f12ce37 100755
  
  #ifdef WMMAC_WFA_CERTIFICATION
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.h b/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.h
-index d4ffe10244..380e7da5f4 100755
+index d4ffe1024..380e7da5f 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/cfg80211.h
 @@ -21,15 +21,6 @@
@@ -4490,7 +4489,7 @@ index d4ffe10244..380e7da5f4 100755
  #define NL80211_SCAN_FLAG_RANDOM_ADDR          (1<<3)
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.c b/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.c
-index e81619b12e..19e59b6f24 100755
+index e81619b12..19e59b6f2 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.c
 @@ -257,7 +257,11 @@ int sprdwl_cmd_init(void)
@@ -5614,7 +5613,7 @@ index e81619b12e..19e59b6f24 100755
  	struct sprdwl_msg_buf *msg;
  	struct sprdwl_cmd_packet_offload *p;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.h b/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.h
-index 8dd59bc2c8..ce8c774e89 100755
+index 8dd59bc2c..ce8c774e8 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/cmdevt.h
 @@ -907,6 +907,7 @@ struct sprdwl_tlv_data {
@@ -5626,7 +5625,7 @@ index 8dd59bc2c8..ce8c774e89 100755
  struct ap_version_tlv_elmt {
  #define NOTIFY_AP_VERSION_USER 0
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/dbg_ini_util.c b/drivers/net/wireless/uwe5622/unisocwifi/dbg_ini_util.c
-index 70415e79b3..264e9f7559 100755
+index 70415e79b..264e9f755 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/dbg_ini_util.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/dbg_ini_util.c
 @@ -264,9 +264,9 @@ int sprdwl_dbg_new_beacon_tail(const u8 *beacon_tail, int tail_len, u8 *new_tail
@@ -5643,7 +5642,7 @@ index 70415e79b3..264e9f7559 100755
  
  	while (tail_len > 2) {
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/debug.c b/drivers/net/wireless/uwe5622/unisocwifi/debug.c
-index 5f25f078ff..84fe30f7e7 100755
+index 998f00ec5..8f12cf16a 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/debug.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/debug.c
 @@ -175,12 +175,12 @@ void adjust_ts_cnt_debug(char *buf, unsigned char offset)
@@ -5663,7 +5662,7 @@ index 5f25f078ff..84fe30f7e7 100755
  		spin_unlock_bh(&debug_ctrl.debug_ctrl_lock);
  	}
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/defrag.c b/drivers/net/wireless/uwe5622/unisocwifi/defrag.c
-index 0b3cfb7676..816940b47d 100755
+index 0b3cfb767..816940b47 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/defrag.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/defrag.c
 @@ -26,11 +26,11 @@ static struct rx_defrag_node
@@ -5756,7 +5755,7 @@ index 0b3cfb7676..816940b47d 100755
  	struct rx_msdu_desc *msdu_desc = (struct rx_msdu_desc *)pskb->data;
  	struct sk_buff *skb = NULL;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/edma_test.c b/drivers/net/wireless/uwe5622/unisocwifi/edma_test.c
-index 5a320b6b55..f45bc8043f 100755
+index 5a320b6b5..f45bc8043 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/edma_test.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/edma_test.c
 @@ -23,7 +23,7 @@
@@ -5825,7 +5824,7 @@ index 5a320b6b55..f45bc8043f 100755
  	}
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/ibss.c b/drivers/net/wireless/uwe5622/unisocwifi/ibss.c
-index d335635bc2..822a17c6bb 100755
+index d335635bc..822a17c6b 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/ibss.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/ibss.c
 @@ -28,8 +28,8 @@
@@ -5879,7 +5878,7 @@ index d335635bc2..822a17c6bb 100755
  	struct sprdwl_vif *vif = netdev_priv(ndev);
  	enum sm_state old_state = vif->sm_state;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/intf.h b/drivers/net/wireless/uwe5622/unisocwifi/intf.h
-index 41b9bd5a3f..c17356251e 100755
+index 41b9bd5a3..c17356251 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/intf.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/intf.h
 @@ -24,17 +24,35 @@ struct sprdwl_priv;
@@ -5920,7 +5919,7 @@ index 41b9bd5a3f..c17356251e 100755
  };
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/intf_ops.h b/drivers/net/wireless/uwe5622/unisocwifi/intf_ops.h
-index c580b30402..3844b0b067 100755
+index c580b3040..3844b0b06 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/intf_ops.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/intf_ops.h
 @@ -28,7 +28,11 @@ inline struct sprdwl_msg_buf *sprdwl_intf_get_msg_buf(struct sprdwl_priv *priv,
@@ -5983,7 +5982,7 @@ index c580b30402..3844b0b067 100755
  
  static inline int sprdwl_get_ini_status(struct sprdwl_priv *priv)
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/main.c b/drivers/net/wireless/uwe5622/unisocwifi/main.c
-index 21efdf4e08..46b9039519 100755
+index edd8ac14f..3b9164214 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/main.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/main.c
 @@ -24,10 +24,13 @@
@@ -6403,7 +6402,7 @@ index 21efdf4e08..46b9039519 100755
  	sprdwl_vendor_deinit(priv->wiphy);
  	wiphy_unregister(priv->wiphy);
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/mm.c b/drivers/net/wireless/uwe5622/unisocwifi/mm.c
-index eaf6554f23..f33d87185d 100755
+index eaf6554f2..f33d87185 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/mm.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/mm.c
 @@ -30,7 +30,7 @@
@@ -6636,7 +6635,7 @@ index eaf6554f23..f33d87185d 100755
  		kfree(mm_entry->hdr);
  		mm_entry->hdr = NULL;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/msg.c b/drivers/net/wireless/uwe5622/unisocwifi/msg.c
-index 511baf91f5..f71a687961 100755
+index 6140199be..f130e0da4 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/msg.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/msg.c
 @@ -17,7 +17,7 @@
@@ -6665,14 +6664,14 @@ index 511baf91f5..f71a687961 100755
  struct sprdwl_msg_buf *sprdwl_get_tail_msg_buf(struct sprdwl_msg_list *list)
  {
  	struct sprdwl_msg_buf *msg_buf = NULL;
-@@ -180,4 +181,5 @@ struct sprdwl_msg_buf *sprdwl_get_tail_msg_buf(struct sprdwl_msg_list *list)
+@@ -180,3 +181,4 @@ struct sprdwl_msg_buf *sprdwl_get_tail_msg_buf(struct sprdwl_msg_list *list)
  	spin_unlock_bh(&list->busylock);
  	return msg_buf;
  }
 +#endif
- 
+\ No newline at end of file
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/msg.h b/drivers/net/wireless/uwe5622/unisocwifi/msg.h
-index dd57521ae7..67a4b474e7 100755
+index dd57521ae..67a4b474e 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/msg.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/msg.h
 @@ -215,5 +215,7 @@ void sprdwl_dequeue_msg_buf(struct sprdwl_msg_buf *msg_buf,
@@ -6684,7 +6683,7 @@ index dd57521ae7..67a4b474e7 100755
  #endif
 +#endif
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/nan.c b/drivers/net/wireless/uwe5622/unisocwifi/nan.c
-index a08a3c0769..740ea0ad38 100755
+index a08a3c076..740ea0ad3 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/nan.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/nan.c
 @@ -43,7 +43,7 @@ int sprdwl_vendor_nan_cmds(struct wiphy *wiphy,
@@ -6697,7 +6696,7 @@ index a08a3c0769..740ea0ad38 100755
  	if (!ret && rsp_len)
  		sprdwl_event_nan(vif, rsp, rsp_len);
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/npi.c b/drivers/net/wireless/uwe5622/unisocwifi/npi.c
-index ca599c8945..90b333b701 100755
+index ca599c894..90b333b70 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/npi.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/npi.c
 @@ -105,7 +105,7 @@ static int sprdwl_cmd_set_psm_cap(struct sprdwl_vif *vif)
@@ -6778,7 +6777,7 @@ index ca599c8945..90b333b701 100755
  #endif
  		.doit = sprdwl_nl_get_info_handler,
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/qos.c b/drivers/net/wireless/uwe5622/unisocwifi/qos.c
-index c01d88fba3..d0e42a882c 100755
+index b1a0f7cc4..047b2d9c3 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/qos.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/qos.c
 @@ -192,7 +192,7 @@ void qos_set_dscp2up_table(unsigned char *dscp2up_table,
@@ -6917,7 +6916,7 @@ index c01d88fba3..d0e42a882c 100755
  unsigned int change_priority_if(struct sprdwl_priv *priv, unsigned char *tid, unsigned char *tos, u16 len)
  {
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/qos.h b/drivers/net/wireless/uwe5622/unisocwifi/qos.h
-index 2a99178bce..3d69d1c573 100755
+index 2a99178bc..3d69d1c57 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/qos.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/qos.h
 @@ -79,6 +79,7 @@ struct qos_map_set {
@@ -6944,7 +6943,7 @@ index 2a99178bce..3d69d1c573 100755
  const u8 *get_wmm_ie(u8 *res, u16 ie_len, u8 ie, uint oui, uint oui_type);
  #endif
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/reg_domain.c b/drivers/net/wireless/uwe5622/unisocwifi/reg_domain.c
-index 5a9857757f..fb15045e17 100755
+index 5a9857757..fb15045e1 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/reg_domain.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/reg_domain.c
 @@ -253,7 +253,7 @@ void ShowChannel(struct wiphy *pWiphy)
@@ -6984,7 +6983,7 @@ index 5a9857757f..fb15045e17 100755
  
  	return false;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/reorder.c b/drivers/net/wireless/uwe5622/unisocwifi/reorder.c
-index 1cb3f9178e..c6c77648dd 100755
+index 1cb3f9178..c6c77648d 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/reorder.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/reorder.c
 @@ -49,7 +49,7 @@ set_ba_node_desc(struct rx_ba_node_desc *ba_node_desc,
@@ -7350,7 +7349,7 @@ index 1cb3f9178e..c6c77648dd 100755
  
  	spin_lock_bh(&ba_node->ba_node_lock);
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/rf_marlin3.c b/drivers/net/wireless/uwe5622/unisocwifi/rf_marlin3.c
-index a2f6cc394c..ca307f12ac 100755
+index a2f6cc394..ca307f12a 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/rf_marlin3.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/rf_marlin3.c
 @@ -181,9 +181,9 @@ static struct nvm_name_table g_config_table[] = {
@@ -7366,7 +7365,7 @@ index a2f6cc394c..ca307f12ac 100755
  	CF_TAB("Chain1_161", tx_scale.chain1[37][0], 1),
  	CF_TAB("Chain0_165", tx_scale.chain0[38][0], 1),
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/rtt.c b/drivers/net/wireless/uwe5622/unisocwifi/rtt.c
-index 69d6965638..9f0e9f2d3d 100755
+index 739d3aa3d..1ad03a902 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/rtt.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/rtt.c
 @@ -203,8 +203,8 @@ static u8 sprdwl_ftm_get_channel(struct wiphy *wiphy,
@@ -7700,7 +7699,7 @@ index 69d6965638..9f0e9f2d3d 100755
  	struct sprdwl_msg_buf *msg;
  	struct sprdwl_cmd_rtt *cmd;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/rx_msg.c b/drivers/net/wireless/uwe5622/unisocwifi/rx_msg.c
-index b6604ee547..b51207d19c 100755
+index b6604ee54..b51207d19 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/rx_msg.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/rx_msg.c
 @@ -31,8 +31,8 @@
@@ -7859,7 +7858,7 @@ index b6604ee547..b51207d19c 100755
  	}
  #endif
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/softap_hook.c b/drivers/net/wireless/uwe5622/unisocwifi/softap_hook.c
-index 5cdc8eff9d..4a859e724e 100755
+index 5cdc8eff9..4a859e724 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/softap_hook.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/softap_hook.c
 @@ -76,7 +76,7 @@ static int sprdwl_get_softap_chan(u8 *path)
@@ -7903,7 +7902,7 @@ index 5cdc8eff9d..4a859e724e 100755
  	*ds_param_ch = oper->primary_chan = channel;
  }
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/sprdwl.h b/drivers/net/wireless/uwe5622/unisocwifi/sprdwl.h
-index e430bfbace..a1b2f8544e 100755
+index e430bfbac..a1b2f8544 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/sprdwl.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/sprdwl.h
 @@ -35,6 +35,7 @@
@@ -7924,7 +7923,7 @@ index e430bfbace..a1b2f8544e 100755
  #endif
  
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/tcp_ack.c b/drivers/net/wireless/uwe5622/unisocwifi/tcp_ack.c
-index d360f9f579..4db766fbac 100755
+index d360f9f57..4db766fba 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/tcp_ack.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/tcp_ack.c
 @@ -26,7 +26,7 @@ static void sprdwl_tcp_ack_timeout(unsigned long data)
@@ -8057,7 +8056,7 @@ index d360f9f579..4db766fbac 100755
  	struct sprdwl_tcp_ack_info *ack_info;
  	struct sprdwl_tcp_ack_manage *ack_m = &priv->ack_m;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/tx_msg.c b/drivers/net/wireless/uwe5622/unisocwifi/tx_msg.c
-index 7be652187b..40d51a7130 100755
+index 7be652187..40d51a713 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/tx_msg.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/tx_msg.c
 @@ -109,7 +109,7 @@ struct sprdwl_msg_buf *sprdwl_get_msg_buf(void *pdev,
@@ -8334,7 +8333,7 @@ index 7be652187b..40d51a7130 100755
  			(*b_cmd_path) = true;
  		}
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/txrx.c b/drivers/net/wireless/uwe5622/unisocwifi/txrx.c
-index b0a24a3615..227339ada7 100755
+index b0a24a361..227339ada 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/txrx.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/txrx.c
 @@ -23,7 +23,9 @@
@@ -8452,7 +8451,7 @@ index b0a24a3615..227339ada7 100755
  	return 0;
  }
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/vendor.c b/drivers/net/wireless/uwe5622/unisocwifi/vendor.c
-index 733591184c..6fba95b60d 100755
+index 733591184..6fba95b60 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/vendor.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/vendor.c
 @@ -17,7 +17,6 @@
@@ -9513,8 +9512,8 @@ index 733591184c..6fba95b60d 100755
  	int err;
  	u8 control;
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/wcn_wrapper.h b/drivers/net/wireless/uwe5622/unisocwifi/wcn_wrapper.h
-new file mode 100755
-index 0000000000..31042f86d6
+new file mode 100644
+index 000000000..31042f86d
 --- /dev/null
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/wcn_wrapper.h
 @@ -0,0 +1,20 @@
@@ -9539,7 +9538,7 @@ index 0000000000..31042f86d6
 +#endif
 +#endif//__WCN_WRAPPER_H__
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/wl_core.c b/drivers/net/wireless/uwe5622/unisocwifi/wl_core.c
-index a4ef854b62..042a4df016 100755
+index a4ef854b6..042a4df01 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/wl_core.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/wl_core.c
 @@ -18,7 +18,6 @@
@@ -9863,7 +9862,7 @@ index a4ef854b62..042a4df016 100755
  
  module_init(unisoc_wlan_init);
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/wl_core.h b/drivers/net/wireless/uwe5622/unisocwifi/wl_core.h
-index 8bad5a5fd5..0d039c18e2 100755
+index 8bad5a5fd..0d039c18e 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/wl_core.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/wl_core.h
 @@ -17,7 +17,7 @@
@@ -9876,7 +9875,7 @@ index 8bad5a5fd5..0d039c18e2 100755
  #include <linux/wait.h>
  #include <linux/spinlock.h>
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.c b/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.c
-index b05a576782..a6def0e068 100755
+index b05a57678..a6def0e06 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.c
 @@ -24,9 +24,6 @@
@@ -10486,7 +10485,7 @@ index b05a576782..a6def0e068 100755
  	}
  	wl_debug("disconnect, flush qoslist, %s, %d\n", __func__, __LINE__);
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.h b/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.h
-index e55a35a66b..b159c685a5 100755
+index e55a35a66..b159c685a 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.h
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/wl_intf.h
 @@ -299,4 +299,5 @@ void sprdwl_boost(void);
@@ -10496,7 +10495,7 @@ index e55a35a66b..b159c685a5 100755
 +void sprdwl_bus_deinit(void);
  #endif /* __SPRDWL_INTF_SDIO_SC2355_H__ */
 diff --git a/drivers/net/wireless/uwe5622/unisocwifi/work.c b/drivers/net/wireless/uwe5622/unisocwifi/work.c
-index b7c0c8bbbf..4d7e016ea6 100755
+index b7c0c8bbb..4d7e016ea 100644
 --- a/drivers/net/wireless/uwe5622/unisocwifi/work.c
 +++ b/drivers/net/wireless/uwe5622/unisocwifi/work.c
 @@ -44,7 +44,7 @@ static struct sprdwl_work *sprdwl_get_work(struct sprdwl_priv *priv)
@@ -10571,3 +10570,6 @@ index b7c0c8bbbf..4d7e016ea6 100755
  {
  	spin_lock_bh(&priv->work_lock);
  	list_add_tail(&sprdwl_work->list, &priv->work_list);
+-- 
+2.34.1
+
