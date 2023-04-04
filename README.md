@@ -16,6 +16,11 @@ Maintainers:
 * Sergey Lapin <slapin@ossfans.org>
 * Marek Belisko <marek.belisko@gmail.com>
 
+Community
+===========
+
+You can reach community + ask your question on gitter: https://matrix.to/#/#meta-sunxi:gitter.im
+
 Kernel / U-Boot Version
 ===========
 Most Allwinner devices and hardware are supported in mainline kernel and U-Boot, so this layer builds mainline by default.
