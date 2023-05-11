@@ -20,8 +20,7 @@ PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot"
 
 KERNEL_IMAGETYPE ?= "uImage"
 
-IMAGE_CLASSES += "sdcard_image-sunxi"
-IMAGE_FSTYPES += "ext3 tar.gz sunxi-sdimg wic.gz wic.bmap"
+IMAGE_FSTYPES += "ext3 tar.gz wic.gz wic.bmap"
 
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
