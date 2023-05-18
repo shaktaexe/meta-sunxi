@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend:sunxi := "${THISDIR}/files:"
 
 DEPENDS:append:sunxi = " bc-native dtc-native swig-native python3-native flex-native bison-native "
-DEPENDS:append:sun50i = " atf-sunxi "
+DEPENDS:append:sun50i = " trusted-firmware-a"
 
 COMPATIBLE_MACHINE:sunxi = "(sun4i|sun5i|sun7i|sun8i|sun50i)"
 
@@ -23,7 +23,7 @@ UBOOT_ENV:sunxi = "boot"
 EXTRA_OEMAKE:append:sunxi = ' HOSTLDSHARED="${BUILD_CC} -shared ${BUILD_LDFLAGS} ${BUILD_CFLAGS}" '
 EXTRA_OEMAKE:append:sun50i = " BL31=${DEPLOY_DIR_IMAGE}/bl31.bin SCP=/dev/null"
 
-do_compile_sun50i[depends] += "atf-sunxi:do_deploy"
+do_compile:sun50i[depends] += "trusted-firmware-a:do_deploy"
 
 do_compile:append:sunxi() {
     ${B}/tools/mkimage -C none -A arm -T script -d ${WORKDIR}/boot.cmd ${WORKDIR}/${UBOOT_ENV_BINARY}
