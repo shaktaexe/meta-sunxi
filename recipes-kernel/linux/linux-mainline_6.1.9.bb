@@ -18,4 +18,6 @@ SRC_URI:append:orange-pi-zero2  = " \
         file://0008-drv-add-sunxi-addr-driver.patch \
         file://0009-dts-add-addr_mgt-device-tree-node.patch \
         file://0010-dts-add-wifi-power-regulator.patch \
+        file://0011-dts-add-usb-to-h616.patch \
+        file://0012-dts-orange-pi-zero2.patch \
 "
