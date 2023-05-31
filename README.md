@@ -6,6 +6,7 @@ Official sunxi OpenEmbedded layer for Allwinner-based boards.
 This layer depends on the additional layers:
 
 * [meta-openembedded/meta-oe](http://git.openembedded.org/meta-openembedded/tree/meta-oe)
+* [meta-arm](https://git.yoctoproject.org/meta-arm)
 
 Tested with core-image-base.
 
