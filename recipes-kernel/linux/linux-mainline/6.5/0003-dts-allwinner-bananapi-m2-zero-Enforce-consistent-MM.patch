@@ -1,0 +1,30 @@
+From 7d7f32460702e99cab48909bb85ed84b67e65062 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@open-nandra.com>
+Date: Tue, 24 Oct 2023 10:43:55 +0200
+Subject: [PATCH] dts: allwinner: bananapi-m2-zero: Enforce consistent MMC
+ numbering
+
+Enforce MMC number (sometimes the order was wrong and the device does not boot).
+
+Signed-off-by: Marek Belisko <marek.belisko@open-nandra.com>
+---
+ arch/arm/boot/dts/allwinner/sun8i-h2-plus-bananapi-m2-zero.dts | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/boot/dts/allwinner/sun8i-h2-plus-bananapi-m2-zero.dts b/arch/arm/boot/dts/allwinner/sun8i-h2-plus-bananapi-m2-zero.dts
+index d729b7c70..410a79487 100644
+--- a/arch/arm/boot/dts/allwinner/sun8i-h2-plus-bananapi-m2-zero.dts
++++ b/arch/arm/boot/dts/allwinner/sun8i-h2-plus-bananapi-m2-zero.dts
+@@ -20,6 +20,9 @@ / {
+ 	aliases {
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
++		mmc0 = &mmc0;
++		mmc1 = &mmc1;
++		mmc2 = &mmc2;
+ 	};
+ 
+ 	chosen {
+-- 
+2.25.1
+
