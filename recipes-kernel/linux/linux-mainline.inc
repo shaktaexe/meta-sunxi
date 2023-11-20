@@ -26,6 +26,8 @@ SRC_URI = "https://www.kernel.org/pub/linux/kernel/v5.x/linux-${PV}.tar.xz \
 	file://0001-dts-orange-pi-zero-Add-wifi-support.patch \
 	file://0002-dts-nanopi-neo-air-add-camera.patch \
 	file://0003-dts-allwinner-bananapi-m2-zreo-Enforce-consistent-MM.patch \
+	file://0004-i2c-mv64xxx-Add-atomic_xfer-method-to-driver.patch \
+	file://0005-i2c-mv64xxx-Remove-shutdown-method-from-driver.patch \
 	file://defconfig \
 "
 
